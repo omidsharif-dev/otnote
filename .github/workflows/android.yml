@@ -18,9 +18,8 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Install Android packages (using pre-installed SDK)
+      - name: Install Android SDK packages
         run: |
-          # GitHub runner has Android SDK at /usr/local/lib/android/sdk
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
           yes | sdkmanager --licenses
