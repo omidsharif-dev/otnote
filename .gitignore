@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# build outputs
+/android/app/build/
+/android/build/
+/android/.gradle/
+/android/gradle/wrapper/gradle-wrapper.jar
+
+# metro
+/metro-cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# logs
+*.log
+npm-debug.log*
+
+# env
+.env
+.env.local

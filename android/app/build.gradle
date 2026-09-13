@@ -1,0 +1,77 @@
+apply plugin: "com.android.application"
+apply plugin: "com.facebook.react"
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+
+def DEFAULT_MIN_SDK = 24
+def DEFAULT_COMPILE_SDK = 34
+def DEFAULT_TARGET_SDK = 34
+def DEFAULT_BUILD_TOOLS_VERSION = "34.0.0"
+def DEFAULT_NDK_VERSION = "25.1.8937393"
+
+def minSdkVersion = project.hasProperty('minSdkVersion') ? project.minSdkVersion : DEFAULT_MIN_SDK
+def compileSdkVersion = project.hasProperty('compileSdkVersion') ? project.compileSdkVersion : DEFAULT_COMPILE_SDK
+def targetSdkVersion = project.hasProperty('targetSdkVersion') ? project.targetSdkVersion : DEFAULT_TARGET_SDK
+def buildToolsVersion = project.hasProperty('buildToolsVersion') ? project.buildToolsVersion : DEFAULT_BUILD_TOOLS_VERSION
+def ndkVersion = project.hasProperty('ndkVersion') ? project.ndkVersion : DEFAULT_NDK_VERSION
+
+android {
+    namespace "com.otnote"
+    compileSdkVersion compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.otnote"
+        minSdkVersion minSdkVersion
+        targetSdkVersion targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        ndkVersion ndkVersion
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+        }
+    }
+
+    splits {
+        abi {
+            reset()
+            enable true
+            universalApk false
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+
+    packagingOptions {
+        pickFirst "**/*.so"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "androidx.appcompat:appcompat:1.6.1"
+    implementation "com.facebook.react:react-native"
+    implementation "com.facebook.react:hermes-engine"
+}
+
+project.ext.react = [
+    enableHermes: true,
+    hermesCommand: "../../node_modules/hermes-engine/%OS-BIN%/hermesc",
+    composeSrcsDirs: [],
+]
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

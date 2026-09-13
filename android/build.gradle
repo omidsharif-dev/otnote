@@ -1,0 +1,27 @@
+buildscript {
+    ext {
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        ndkVersion = "25.1.8937393"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.2.2")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("de.undercouch:gradle-download-task:5.0.1")
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven {
+            url(file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")).getParentFile()
+        }
+    }
+}
