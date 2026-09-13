@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -15,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -31,24 +32,35 @@ jobs:
             cmdline-tools;latest
           accept-android-sdk-licenses: true
 
-      - name: Cache node_modules
-        uses: actions/cache@v4
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: ${{ runner.os }}-node-
+          node-version: 20
+          cache: npm
 
-      - name: Install Node dependencies
+      - name: Install dependencies
         run: npm ci --prefer-offline --no-audit
+
+      - name: Bundle JS (React Native)
+        run: |
+          mkdir -p android/app/src/main/assets
+          npx react-native bundle \
+            --platform android \
+            --dev false \
+            --entry-file index.js \
+            --bundle-output android/app/src/main/assets/index.android.bundle \
+            --assets-dest android/app/src/main/res
+
+      - name: Prepare gradlew
+        run: |
+          cd android
+          if [ ! -f gradlew ]; then gradle wrapper --gradle-version 8.5 --distribution-type bin; fi
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
 
       - name: Build Debug APK
         run: |
           cd android
-          # اگر wrapper وجود نداشته باشد، بساز
-          if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version 8.5 --distribution-type bin
-          fi
-          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload Debug APK
