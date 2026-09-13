@@ -38,6 +38,9 @@ jobs:
           GRADLE_VER=8.5
           curl -L -o gradle/wrapper/gradle-wrapper.jar https://github.com/gradle/gradle/raw/v${GRADLE_VER}/gradle/wrapper/gradle-wrapper.jar
 
+      - name: Fix gradlew line endings (CRLF -> LF)
+        run: sed -i 's/\r$//' android/gradlew
+
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
